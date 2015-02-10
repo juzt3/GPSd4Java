@@ -23,7 +23,7 @@ package de.taimos.gpsd4java.api;
 import de.taimos.gpsd4java.types.TPVObject;
 
 /**
- * Derive this class to implement a listener for location updates which reacts to changes greater a given threshold
+ * Derive this class to implement a listener for speed updates which reacts to changes smaller a given threshold
  * 
  * @author juzt3
  */
@@ -36,7 +36,7 @@ public abstract class SpeedListener extends ObjectListener {
 	
 	/**
 	 * @param threshold
-	 *            the threshold to fire in kilometers
+	 *            the threshold to fire in kilometers per hour
 	 */
 	public SpeedListener(final double threshold) {
 		this.threshold = threshold;
