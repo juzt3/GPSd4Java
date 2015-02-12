@@ -24,7 +24,7 @@ public class CSVtoTPV {
 		
 		while((line=br.readLine())!=null){
 			if(line.isEmpty()) continue;
-			if(Character.isDigit(line.charAt(0))) continue;
+			if(!Character.isDigit(line.charAt(0))) continue;
 			
 			String[] tokens = line.split(",");
 			double latitude = Double.parseDouble(tokens[2]);
