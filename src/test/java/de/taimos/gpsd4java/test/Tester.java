@@ -122,7 +122,7 @@ public class Tester {
 			});
 			
 			//ep.start();
-			simulator.read(new File("file.csv"));
+			simulator.read(new File("/home/juzt3/Documentos/MyTracks/csv/Prueba.csv"));
 			
 			//Tester.log.info("Version: {}", ep.version());
 			
