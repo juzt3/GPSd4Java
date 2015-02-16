@@ -9,13 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.taimos.gpsd4java.api.IObjectListener;
-import de.taimos.gpsd4java.types.ATTObject;
-import de.taimos.gpsd4java.types.DeviceObject;
-import de.taimos.gpsd4java.types.DevicesObject;
 import de.taimos.gpsd4java.types.IGPSObject;
-import de.taimos.gpsd4java.types.SKYObject;
 import de.taimos.gpsd4java.types.TPVObject;
-import de.taimos.gpsd4java.types.subframes.SUBFRAMEObject;
 
 public class CSVtoTPV {
 	
