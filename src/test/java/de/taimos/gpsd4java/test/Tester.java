@@ -19,10 +19,12 @@ package de.taimos.gpsd4java.test;
  * limitations under the License.
  * #L%
  */
+import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import CSVtoTPV.CSVtoTPV;
 import de.taimos.gpsd4java.api.ObjectListener;
 import de.taimos.gpsd4java.backend.GPSdEndpoint;
 import de.taimos.gpsd4java.backend.ResultParser;
@@ -77,7 +79,9 @@ public class Tester {
 				break;
 			}
 			
-			final GPSdEndpoint ep = new GPSdEndpoint(host, port, new ResultParser());
+			//final GPSdEndpoint ep = new GPSdEndpoint(host, port, new ResultParser());
+			
+			final CSVtoTPV ep = new CSVtoTPV();
 			
 			ep.addListener(new ObjectListener() {
 				
@@ -85,7 +89,7 @@ public class Tester {
 				public void handleTPV(final TPVObject tpv) {
 					Tester.log.info("TPV: {}", tpv);
 				}
-				
+				/*
 				@Override
 				public void handleSKY(final SKYObject sky) {
 					Tester.log.info("SKY: {}", sky);
@@ -114,16 +118,17 @@ public class Tester {
 					for (final DeviceObject d : devices.getDevices()) {
 						Tester.log.info("Device: {}", d);
 					}
-				}
+				}*/
 			});
 			
-			ep.start();
+			//ep.start();
+			ep.read(new File("file.csv"));
 			
-			Tester.log.info("Version: {}", ep.version());
+			//Tester.log.info("Version: {}", ep.version());
 			
-			Tester.log.info("Watch: {}", ep.watch(true, true));
+			//Tester.log.info("Watch: {}", ep.watch(true, true));
 			
-			Tester.log.info("Poll: {}", ep.poll());
+			//Tester.log.info("Poll: {}", ep.poll());
 			
 			Thread.sleep(60000);
 		} catch (final Exception e) {
