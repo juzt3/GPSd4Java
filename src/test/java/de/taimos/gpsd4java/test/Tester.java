@@ -81,9 +81,9 @@ public class Tester {
 			
 			//final GPSdEndpoint ep = new GPSdEndpoint(host, port, new ResultParser());
 			
-			final CSVtoTPV ep = new CSVtoTPV();
+			final CSVtoTPV simulator = new CSVtoTPV();
 			
-			ep.addListener(new ObjectListener() {
+			simulator.addListener(new ObjectListener() {
 				
 				@Override
 				public void handleTPV(final TPVObject tpv) {
@@ -122,7 +122,7 @@ public class Tester {
 			});
 			
 			//ep.start();
-			ep.read(new File("file.csv"));
+			simulator.read(new File("file.csv"));
 			
 			//Tester.log.info("Version: {}", ep.version());
 			

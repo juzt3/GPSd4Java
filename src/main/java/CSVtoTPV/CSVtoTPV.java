@@ -8,6 +8,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.taimos.gpsd4java.api.IObjectListener;
 import de.taimos.gpsd4java.types.IGPSObject;
 import de.taimos.gpsd4java.types.TPVObject;
@@ -15,6 +18,8 @@ import de.taimos.gpsd4java.types.TPVObject;
 public class CSVtoTPV {
 	
 	private TPVObject tpv;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(CSVtoTPV.class);
 	
 	private final List<IObjectListener> listeners = new ArrayList<IObjectListener>(1);
 	
@@ -46,6 +51,12 @@ public class CSVtoTPV {
 			tpv.setCourse(course);
 			tpv.setSpeed(speed);
 			tpv.setTimestamp(timestamp);
+			
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				CSVtoTPV.LOG.debug("Interrupted while sleeping", e);
+			}
 		}
 		
 		br.close();
