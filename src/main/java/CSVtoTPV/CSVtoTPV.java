@@ -1,7 +1,6 @@
 package CSVtoTPV;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
@@ -13,38 +12,46 @@ import org.slf4j.LoggerFactory;
 
 import de.taimos.gpsd4java.api.IObjectListener;
 import de.taimos.gpsd4java.types.ENMEAMode;
+import de.taimos.gpsd4java.types.IGPSObject;
 import de.taimos.gpsd4java.types.TPVObject;
 
 public class CSVtoTPV {
 	
-	private TPVObject tpv;
-	private BufferedReader br;
-	private boolean read = false;
-	private double speed = 0;
+	private long sleeptime = 500;
+	private double speed = Double.NaN;
+	private String directory = "";
+	private List<TPVObject> tpvlist = new ArrayList<TPVObject>(10000);
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CSVtoTPV.class);
 	
 	private final List<IObjectListener> listeners = new ArrayList<IObjectListener>(1);
-	
-	public CSVtoTPV (){
-		this.read = true;
+	//Constructores
+	public CSVtoTPV(){	
 	}
 	
-	public CSVtoTPV(double speed){
+	public CSVtoTPV(double speed, long sleeptime){
 		this.speed = speed;
-		this.read = true;
+		this.sleeptime = sleeptime;
 	}
 	
-	public void read(File file) throws IOException, ParseException {
+	public CSVtoTPV(double speed, long sleeptime, String directory){
+		this.speed = speed;
+		this.sleeptime = sleeptime;
+		this.directory = directory;
+	}
+	//Fin constructores
+	
+	//Metodos
+	public void read(String file) throws IOException, ParseException {
 		//"Segmento","Punto","Latitud (grados)","Longitud (grados)","Altitud (m)","Rumbo (grados)","Precisión (m)","Velocidad (m/s)","Tiempo","Potencia (W)","Cadencia (rpm)","Frecuencia cardíaca (lpm)"
-		this.br = new BufferedReader(new FileReader(file));
+		BufferedReader br = new BufferedReader(new FileReader(this.directory+file+".csv"));
 		String line;
 		
-		while((line=br.readLine())!=null && read){
+		while((line=br.readLine())!=null){
 			if(line.isEmpty()) continue;
 			if(!Character.isDigit(line.charAt(1))) continue;
 			
-			tpv = new TPVObject();
+			TPVObject tpv = new TPVObject();
 			
 			line = line.replace("\"", "");
 			String[] tokens = line.split(",");
@@ -64,7 +71,7 @@ public class CSVtoTPV {
 			//double timestamp = Double.parseDouble(tokens[8]);
 			
 			tpv.setTag("Simulator");
-			tpv.setDevice(file.getName());
+			tpv.setDevice(file);
 			tpv.setLatitude(latitude);
 			tpv.setLongitude(longitude);
 			tpv.setAltitude(altitude);
@@ -73,37 +80,54 @@ public class CSVtoTPV {
 			//tpv.setTimestamp(timestamp);
 			tpv.setMode(ENMEAMode.NotSeen);
 			
-			for (final IObjectListener l : this.listeners) {
-				l.handleTPV((TPVObject) tpv);
-			}
+			tpvlist.add(tpv);
+		}
+		
+		CSVtoTPV.LOG.info("File successfuly readed");	
+		br.close();
+	}
+	
+	public void readSeveral(String file) throws IOException, ParseException {
+		
+		String[] cities = file.split("-");
+		
+		for(String s : cities){
+			read(s);
+		}
+	}
+	
+	public void send(){
+		for(final IGPSObject tpv : this.tpvlist){
+			this.handle(tpv);
 			
 			try {
-				Thread.sleep(500);
+				Thread.sleep(this.sleeptime);
 			} catch (InterruptedException e) {
 				CSVtoTPV.LOG.debug("Interrupted while sleeping", e);
 			}
 		}
-		
-		this.stop();
-		CSVtoTPV.LOG.warn("End of file");
 	}
 	
-	// TODO better stop
-	// ########################################
-	public void stop(){
-		this.read = false;
-		try {
-			br.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public void send(int start, int end){
+		for(start++ ; start <= end; start++){
+			this.handle(this.tpvlist.get(start));
+			
+			try {
+				Thread.sleep(this.sleeptime);
+			} catch (InterruptedException e) {
+				CSVtoTPV.LOG.debug("Interrupted while sleeping", e);
+			}
 		}
 	}
 	
-	public TPVObject getTPV(){
-		return tpv;
+	public void setSleeptime(long sleeptime){
+		this.sleeptime = sleeptime;
 	}
 	
+	public List<TPVObject> getTPVList(){
+		return tpvlist;
+	}
+
 	public void addListener(final IObjectListener listener) {
 		this.listeners.add(listener);
 	}
@@ -111,5 +135,13 @@ public class CSVtoTPV {
 	public void removeListener(final IObjectListener listener) {
 		this.listeners.remove(listener);
 	}
-
-}
+	
+	void handle(final IGPSObject object) {
+		if (object instanceof TPVObject) {
+			for (final IObjectListener l : this.listeners) {
+				l.handleTPV((TPVObject) object);
+			}
+		}
+	}
+	//Fin Metodos
+}//Fin Clase CSVtoTPV
