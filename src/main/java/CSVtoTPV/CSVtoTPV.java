@@ -37,14 +37,14 @@ public class CSVtoTPV {
 	public CSVtoTPV(double speed, long sleeptime, String directory){
 		this.speed = speed;
 		this.sleeptime = sleeptime;
-		this.directory = directory;
+		this.setDirectory(directory);
 	}
 	//Fin constructores
 	
 	//Metodos
 	public void read(String file) throws IOException, ParseException {
 		//"Segmento","Punto","Latitud (grados)","Longitud (grados)","Altitud (m)","Rumbo (grados)","Precisión (m)","Velocidad (m/s)","Tiempo","Potencia (W)","Cadencia (rpm)","Frecuencia cardíaca (lpm)"
-		BufferedReader br = new BufferedReader(new FileReader(this.directory+file+".csv"));
+		BufferedReader br = new BufferedReader(new FileReader(this.getDirectory()+file+".csv"));
 		String line;
 		
 		while((line=br.readLine())!=null){
@@ -87,11 +87,13 @@ public class CSVtoTPV {
 		br.close();
 	}
 	
+	//Format tu use this method: "Origin-Middle1-Middle2-MiddleN-Destiny"
 	public void readSeveral(String file) throws IOException, ParseException {
 		
 		String[] cities = file.split("-");
 		
-		for(String s : cities){
+		for(int i = 0 ; i < (cities.length)-1 ; i++){
+			String s = cities[i]+"-"+cities[i+1];
 			read(s);
 		}
 	}
@@ -124,6 +126,18 @@ public class CSVtoTPV {
 		this.sleeptime = sleeptime;
 	}
 	
+	public long getSleeptime(){
+		return this.sleeptime;
+	}
+	
+	public String getDirectory() {
+		return directory;
+	}
+
+	public void setDirectory(String directory) {
+		this.directory = directory;
+	}
+
 	public List<TPVObject> getTPVList(){
 		return tpvlist;
 	}
