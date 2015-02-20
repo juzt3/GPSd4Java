@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +31,9 @@ public class CSVtoTPV {
 	public CSVtoTPV(){	
 	}
 	
-	public CSVtoTPV(double speed, long sleeptime){
-		this.speed = speed;
+	public CSVtoTPV(long sleeptime, String directory){
 		this.sleeptime = sleeptime;
+		this.setDirectory(directory);
 	}
 	
 	public CSVtoTPV(double speed, long sleeptime, String directory){
@@ -61,14 +63,18 @@ public class CSVtoTPV {
 			double altitude = Double.parseDouble(tokens[4]);
 			double course = Double.parseDouble(tokens[5]);
 			
-			if(tokens[7].isEmpty()){
-				tpv.setSpeed(this.speed);
-			}
-			else{
+			if(!tokens[7].isEmpty()){
 				tpv.setSpeed(Double.parseDouble(tokens[7]));
 			}
-			
-			//double timestamp = Double.parseDouble(tokens[8]);
+			if(this.speed == Double.NaN){
+				tpv.setSpeed(this.speed);
+			}
+			//TODO Testing
+			//##################################
+			/*
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	        Date timestamp = formatter.parse(tokens[8]);
+	        System.out.println(timestamp);*/
 			
 			tpv.setTag("Simulator");
 			tpv.setDevice(file);
@@ -76,7 +82,6 @@ public class CSVtoTPV {
 			tpv.setLongitude(longitude);
 			tpv.setAltitude(altitude);
 			tpv.setCourse(course);
-			tpv.setSpeed(speed);
 			//tpv.setTimestamp(timestamp);
 			tpv.setMode(ENMEAMode.NotSeen);
 			
