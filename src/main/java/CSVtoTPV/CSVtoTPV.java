@@ -69,12 +69,6 @@ public class CSVtoTPV {
 			if(this.speed == Double.NaN){
 				tpv.setSpeed(this.speed);
 			}
-			//TODO Testing
-			//##################################
-			/*
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-	        Date timestamp = formatter.parse(tokens[8]);
-	        System.out.println(timestamp);*/
 			
 			tpv.setTag("Simulator");
 			tpv.setDevice(file);
@@ -82,7 +76,6 @@ public class CSVtoTPV {
 			tpv.setLongitude(longitude);
 			tpv.setAltitude(altitude);
 			tpv.setCourse(course);
-			//tpv.setTimestamp(timestamp);
 			tpv.setMode(ENMEAMode.NotSeen);
 			
 			tpvlist.add(tpv);
